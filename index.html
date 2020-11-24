@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Hello, VueJS!</title>
+    <link rel="stylesheet" href="js/bootstrap.min.css">
+    <style>
+        
+        table {
+            border-collapse: collapse;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid black;
+            padding: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="studentgradeApp" v-cloak>
+       
+        <div v-show="view === 'tablelist'">
+
+            <p>
+                <p>Enter Student Id: <input type="text" v-model="searchKeyword" placeholder="Search"> 
+                <button @click="searchStudents" class="btn btn-success">Search</button>
+            </p>  
+           
+            <table>
+                <thead>
+                    <tr>
+                        <th v-for="column in columnHeader">
+                            {{column}}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="student in students">
+                        <td>{{student.id}}</td>
+                        <td>{{student.studentId}}</td>
+                        <td>{{student.subjectId}}</td>
+                        <td>{{student.p1Grade}}</td>
+                        <td>{{student.p2Grade}}</td>
+                        <td>{{student.p3Grade}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+       
+    </div>
+
+    <!-- Vue JS CDN https://unpkg.com/vue@2.6.10/dist/vue.min.js -->
+    <script src="js/vue.min.js"></script>
+    <!-- Axios CDN https://unpkg.com/axios@0.19.0/dist/axios.min.js -->
+    <script src="js/axios.min.js"></script>
+    <script>
+        var contactApp = new Vue({
+            el: '#studentgradeApp',
+            data: {
+                baseUrl: "http://www.rabgose.somee.com",
+                appName: "Student Grade Webapp",
+                columnHeader: ['Id', 'StudentId', 'SubjectId', 'P1Grade', 'P2Grade', 'P3Grade'],
+                students: [],
+                detailItem: {},
+                searchKeyword: "",
+                view: "tablelist"
+            },
+            methods: {
+                display: function (v) {
+                    this.view = v;
+                },
+                getStudents: function () {
+                    axios.get(this.baseUrl + "/api/student/All")
+                        .then(response => {
+                            this.students = response.data;
+                            this.searchKeyword = '';
+                        });
+                },
+               
+                searchStudents: function () {
+                    if (this.searchKeyword) {
+                        axios.get(this.baseUrl + "/api/StudentGrade")
+                            .then(response => {
+                                this.students = response.data;
+                            });
+                    }
+                    else {
+                        this.getStudents();
+                    }
+                }
+            },
+            mounted: function () {
+                this.getStudents();
+            }
+        });
+
+    </script>
+
+</body>
+
+</html>
